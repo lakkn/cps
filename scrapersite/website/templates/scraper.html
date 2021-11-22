@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Scraper{% endblock %}
+
+{% block content %}
+  <header class="page-header pt-5">
+    <div class="container pt-5">
+      <div class="row align-items-center justify-content-center">
+        <form class="d-flex" method="POST">
+            <input class="form-control me-2" id="search" name="search" type="search" placeholder="Search" aria-label="Search">
+            <button class="btn btn-outline-success" type="submit">Search</button>
+        </form>
+      </div>
+
+        {% if not inlen==0 %}
+          <div class="row align-items-center justify-content-center pt-5">
+            <div>
+              <div class="card text-center">
+                <div class="fw-bold">
+                  <h2 class="card-title text-center">Team {{info[1]}} from {{info[2]}}</h2>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="row align-items-center justify-content-center pt-3">
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Score
+                </div>
+                <ul class="list-group list-group-flush">
+                  {% if inlen == 10 %}
+                    <li class="list-group-item">{% if info[9] == None %}Score withheld{% else %}{{info[9]}} points scored{% endif %}</li>
+                    <li class="list-group-item">330 points possible</li>
+                  {% else %}
+                    <li class="list-group-item">{% if info[8] == None %}Score withheld{% else %}{{info[8]}} points scored{% endif %}</li>
+                    <li class="list-group-item">300 points possible</li>
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Warnings
+                </div>
+                <ul class="list-group list-group-flush">
+                  {% if info[7] == None %}
+                    <li class="list-group-item">No Warnings Recieved</li>
+                  {% else %}
+                    {% for pen in info[7] %}
+                      {% if pen == "W" %}
+                        <li class="list-group-item"><b>W</b>ithheld Score</li>
+                      {% elif pen == "T" %}
+                        <li class="list-group-item"><b>T</b>ime Limit Passed</li>
+                      {% elif pen == "M" %}
+                        <li class="list-group-item"><b>M</b>ulptiple Instances of Images</li>
+                      {% endif %}
+                    {% endfor %}
+                  {% endif %}
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Timing
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">Score achieved in {{info[6]}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+          <div class="row align-items-center justify-content-center pt-3">
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Rank
+                </div>
+                <ul class="list-group list-group-flush">
+                  {% set ldigit = info[0]%10 %}
+                  {% if ldigit == 1 and not info[0]%100 == 11 %}
+                    <li class="list-group-item">{{info[0]}}st place</li>
+                  {% elif ldigit == 2 and not info[0]%100 == 12 %}
+                    <li class="list-group-item">{{info[0]}}nd place</li>
+                  {% elif ldigit == 3 and not info[0]%100 == 13 %}
+                    <li class="list-group-item">{{info[0]}}rd place</li>
+                  {% else %}
+                    <li class="list-group-item">{{info[0]}}th place</li>
+                  {% endif %}
+                  {% set ptile = ((info[0]/numt)*100)|round(2) %}
+                  <li class="list-group-item">{{ptile}} percentile</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Margin
+                </div>
+                <ul class="list-group list-group-flush">
+                  {% if inlen == 10 %}
+                    {% set pund = topt[9]|int - info[9]|int %}
+                  {% else %}
+                    {% set pund = topt[8]|int - info[8]|int %}
+                  {% endif %}
+                  <li class="list-group-item">{{pund}} points under 1st place</li>
+                  {% if teama[8] == None %}
+                    {% set pab = 0 %}
+                  {% elif inlen == 10 %}
+                    {% set pab = teama[9]|int - info[9]|int %}
+                  {% else %}
+                    {% set pab = teama[8]|int - info[8]|int %}
+                  {% endif %}
+                  {% set numab = info[0]-1 %}
+                  <li class="list-group-item">{{pab}} points under {{numab}}{% set ldigit = numab%10 %}{% if ldigit == 1 and not numab%100 == 11 %}st{% elif ldigit == 2 and not numab%100 == 12 %}nd{% elif ldigit == 3 and not numab%100 == 13 %}rd{% else %}th{% endif %} place</li>
+                  {% if teamb[8] == None %}
+                    {% set pbel = 0 %}
+                  {% elif inlen == 10 %}
+                    {% set pbel = info[9]|int - teamb[9]|int %}
+                  {% else %}
+                    {% set pbel = info[8]|int - teamb[8]|int %}
+                  {% endif %}
+                  {% set numbel = info[0]+1 %}
+                  <li class="list-group-item">{{pbel}} points above {{numbel}}{% set ldigit = numbel%10 %}{% if ldigit == 1 and not numbel%100 == 11 %}st{% elif ldigit == 2 and not numbel%100 == 12 %}nd{% elif ldigit == 3 and not numbel%100 == 13 %}rd{% else %}th{% endif %} place</li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="card">
+                <div class="card-header fw-bold">
+                  Standing
+                </div>
+                <ul class="list-group list-group-flush">
+                  <li class="list-group-item">{{stinfo[0]}}{% set ldigit = stinfo[0]%10 %}{% if ldigit == 1 and not stinfo[0]%100 == 11 %}st{% elif ldigit == 2 and not stinfo[0]%100 == 12 %}nd{% elif ldigit == 3 and not stinfo[0]%100 == 13 %}rd{% else %}th{% endif %} of {{stinfo[1]}} peer teams in state {{info[2]}}</li>
+                  <li class="list-group-item">{{tiinfo[0]}}{% set ldigit = tiinfo[0]%10 %}{% if ldigit == 1 and not tiinfo[0]%100 == 11 %}st{% elif ldigit == 2 and not tiinfo[0]%100 == 12 %}nd{% elif ldigit == 3 and not tiinfo[0]%100 == 13 %}rd{% else %}th{% endif %} of {{tiinfo[1]}} peer teams in tier {{info[4]}}</li>
+                  <li class="list-group-item">{{diinfo[0]}}{% set ldigit = diinfo[0]%10 %}{% if ldigit == 1 and not diinfo[0]%100 == 11 %}st{% elif ldigit == 2 and not diinfo[0]%100 == 12 %}nd{% elif ldigit == 3 and not diinfo[0]%100 == 13 %}rd{% else %}th{% endif %} of {{diinfo[1]}} peer teams in divison {{info[3]}}</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        {% endif %}
+    </div>
+  </header>
+{% endblock %}
